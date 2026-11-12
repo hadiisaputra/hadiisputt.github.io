@@ -43,7 +43,7 @@ function updateActiveNavigation() {
 window.addEventListener("scroll", updateActiveNavigation);
 
 const revealElements = document.querySelectorAll(
-  ".section-header, .about-text, .skill-card, .timeline-item, .project-card, .contact-content"
+  ".section-header, .about-text, .skill-card, .timeline-item, .project-card"
 );
 revealElements.forEach((element) => {
   element.classList.add("js-reveal");
