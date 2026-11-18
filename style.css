@@ -104,10 +104,10 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
+  text-wrap: balance;
   margin-bottom: 12px;
 }
 .hero-role { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--muted); margin-bottom: 20px; }
-.hero-description { max-width: 480px; color: var(--muted); font-size: 1rem; margin-bottom: 28px; }
 .hero-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
 
 .btn {
@@ -177,8 +177,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .timeline::before {
   content: "";
   position: absolute;
-  left: 15px;
-  top: 8px; bottom: 8px;
+  left: 32px;
+  top: 13px; bottom: 13px;
   width: 1px;
   background: var(--border);
 }
@@ -192,17 +192,19 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .timeline-number {
   position: relative;
   z-index: 2;
-  min-width: 32px;
-  height: 32px;
+  min-width: 56px;
+  height: 26px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 .timeline-content { padding-top: 2px; }
 .timeline-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
@@ -220,7 +222,22 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   transition: border-color var(--transition);
 }
 .project-card:hover { border-color: var(--text); }
-.project-image { height: 160px; overflow: hidden; background: var(--surface); }
+.project-image { position: relative; height: 160px; overflow: hidden; background: var(--surface); }
+.project-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .project-image img { width: 100%; height: 100%; object-fit: cover; }
 .project-image.image-error img { display: none; }
 .project-content { padding: 16px; flex: 1; display: flex; flex-direction: column; }
@@ -243,42 +260,60 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   font-size: 0.7rem;
   font-weight: 500;
 }
-.project-links { display: flex; gap: 16px; margin-top: auto; }
+.project-links { display: flex; align-items: center; gap: 16px; margin-top: auto; }
 .project-links a { color: var(--text); font-size: 0.82rem; font-weight: 500; }
 .project-links a:hover { color: var(--accent); }
+.project-demo {
+  padding: 4px 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted-2);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+/* ============ CONTACT ============ */
+/* Spacing mengikuti standar situs: .section 96px/72px, .section-header
+   48px/36px, dan gap memakai skala 12px/10px yang sama seperti section lain */
+.contact { background: var(--surface); }
+.contact .section-header { text-align: center; }
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.contact-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+.contact-links a:hover { border-color: var(--accent); color: var(--accent); background: var(--bg); }
+.contact-links svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
 
 /* ============ FOOTER ============ */
 .footer { border-top: 1px solid var(--border); padding: 24px 0; background: var(--bg); }
 .footer-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   color: var(--muted-2);
   font-size: 0.8rem;
-}
-.footer-social {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: clamp(12px, 4vw, 18px);
-}
-.footer-social a {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(5px, 1.5vw, 7px);
-  white-space: nowrap;
-  color: var(--muted-2);
-  font-size: clamp(0.72rem, 2.6vw, 0.8rem);
-  font-weight: 500;
-  transition: color var(--transition);
-}
-.footer-social a:hover { color: var(--accent); }
-.footer-social svg {
-  width: clamp(13px, 3.6vw, 16px);
-  height: clamp(13px, 3.6vw, 16px);
-  flex-shrink: 0;
-  fill: currentColor;
+  text-align: center;
 }
 
 /* ============ BACK TO TOP ============ */
@@ -304,7 +339,6 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 @media (max-width: 900px) {
   .hero-container { grid-template-columns: 1fr; text-align: center; gap: 40px; }
   .hero-image { order: -1; }
-  .hero-description { margin-left: auto; margin-right: auto; }
   .hero-buttons { justify-content: center; }
   .profile-placeholder { width: 220px; height: 220px; }
   .skills-grid { grid-template-columns: repeat(2, 1fr); }
@@ -332,21 +366,17 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   .hero { padding-top: 72px; }
   .hero-title { font-size: clamp(2.25rem, 12vw, 3rem); }
   .hero-role { font-size: 0.95rem; }
-  .hero-description { font-size: 0.92rem; }
   .profile-placeholder { width: 180px; height: 180px; }
   .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
   .btn { width: 100%; }
   .skills-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
-  .timeline::before { left: 15px; }
+  .timeline::before { left: 32px; }
   .timeline-item { gap: 14px; }
   .footer-content { flex-direction: column; text-align: center; }
-  .footer-social {
-    justify-content: center;
-    flex-wrap: nowrap;
-    width: 100%;
-    gap: 16px;
-  }
+  .contact-links { gap: 10px; }
+  .contact-links a { width: 40px; height: 40px; }
+  .contact-links svg { width: 18px; height: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
