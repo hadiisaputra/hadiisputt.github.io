@@ -67,42 +67,66 @@
         <!-- Logo -->
         <a href="#home" class="logo">Hadi<span>.</span></a>
 
-        <!-- Navigation -->
-        <ul class="nav-menu" id="primary-navigation">
-          <li>
-            <a href="#home" class="nav-link">Home</a>
-          </li>
+        <div class="nav-actions">
+          <!-- Navigation -->
+          <ul class="nav-menu" id="primary-navigation">
+            <li>
+              <a href="#home" class="nav-link">Home</a>
+            </li>
 
-          <li>
-            <a href="#about" class="nav-link">About</a>
-          </li>
+            <li>
+              <a href="#about" class="nav-link">About</a>
+            </li>
 
-          <li>
-            <a href="#skills" class="nav-link">Skills</a>
-          </li>
+            <li>
+              <a href="#skills" class="nav-link">Skills</a>
+            </li>
 
-          <li>
-            <a href="#journey" class="nav-link">Journey</a>
-          </li>
+            <li>
+              <a href="#journey" class="nav-link">Journey</a>
+            </li>
 
-          <li>
-            <a href="#projects" class="nav-link">Projects</a>
-          </li>
+            <li>
+              <a href="#projects" class="nav-link">Projects</a>
+            </li>
 
-          <li>
-            <a href="#contact" class="nav-link">Contact</a>
-          </li>
-        </ul>
+            <li>
+              <a href="#contact" class="nav-link">Contact</a>
+            </li>
+          </ul>
 
-        <!-- Mobile Menu Button -->
-        <button
-          class="menu-toggle"
-          aria-label="Toggle navigation menu"
-          aria-controls="primary-navigation"
-          aria-expanded="false"
-        >
-          &#9776;
-        </button>
+          <!-- Quick Search Button -->
+          <button
+            class="search-trigger"
+            type="button"
+            aria-haspopup="dialog"
+            aria-keyshortcuts="Meta+K Control+K"
+            aria-label="Open quick search"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.5" y1="16.5" x2="21" y2="21" />
+            </svg>
+            <span class="search-trigger-label">Ctrl+K</span>
+          </button>
+
+          <!-- Mobile Menu Button -->
+          <button
+            class="menu-toggle"
+            aria-label="Toggle navigation menu"
+            aria-controls="primary-navigation"
+            aria-expanded="false"
+          >
+            &#9776;
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -603,6 +627,69 @@
         <p>&copy; 2026 Hadi Saputra. All Rights Reserved.</p>
       </div>
     </footer>
+
+    <!-- ==================== QUICK SEARCH DIALOG ==================== -->
+    <dialog
+      class="search-dialog"
+      id="search-dialog"
+      aria-label="Quick search"
+    >
+      <div class="search-panel">
+        <div class="search-bar">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            placeholder="Search sections and projects…"
+            aria-label="Search sections and projects"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="search-results"
+            aria-autocomplete="list"
+            autocomplete="off"
+            spellcheck="false"
+            autofocus
+          />
+
+          <button
+            type="button"
+            class="search-kbd search-close"
+            aria-label="Close search"
+          >
+            Esc
+          </button>
+        </div>
+
+        <ul
+          class="search-results"
+          id="search-results"
+          role="listbox"
+          aria-label="Search results"
+        ></ul>
+
+        <p class="search-empty" id="search-empty" hidden>
+          No matching sections or projects.
+        </p>
+
+        <div class="search-footer">
+          <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+          <span><kbd>Enter</kbd> Open</span>
+          <span><kbd>Esc</kbd> Close</span>
+        </div>
+      </div>
+    </dialog>
 
     <!-- ==================== JAVASCRIPT ==================== -->
     <script src="script.js"></script>
