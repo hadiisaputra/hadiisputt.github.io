@@ -278,28 +278,47 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 /* Spacing mengikuti standar situs: .section 96px/72px, .section-header
    48px/36px, dan gap memakai skala 12px/10px yang sama seperti section lain */
 .contact { background: var(--surface); }
+/* #contact dirapatkan dengan footer: padding bawah 96px/72px → 24px,
+   sehingga jeda ke footer tinggal 24px + 24px padding atas footer (48px).
+   Selector .contact.section menimpa padding shorthand .section,
+   termasuk di dalam media query ≤650px. */
+.contact.section { padding-bottom: 24px; }
 .contact .section-header { text-align: center; }
 .contact-links {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  flex-wrap: nowrap; /* selalu satu baris horizontal */
+  gap: clamp(6px, 1.5vw, 12px);
+  overflow-x: auto; /* cadangan: geser horizontal di layar sangat sempit */
+  padding-bottom: 4px;
+  scrollbar-width: thin;
 }
 .contact-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  flex: 0 0 auto; /* tidak menyusut agar teks tidak terpotong */
+  gap: clamp(5px, 1vw, 8px);
+  padding: clamp(8px, 1.4vw, 10px) clamp(10px, 2vw, 18px);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 999px;
   background: var(--bg);
   color: var(--text);
+  font-size: clamp(0.78rem, 1.5vw, 0.9rem);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
   transition: border-color var(--transition), color var(--transition), background var(--transition);
 }
+/* Kelompok pill terpusat: auto margin di sisi LUAR baris pertama/terakhir.
+   Saat layar sempit, margin otomatis menyusut ke 0 sehingga baris bisa
+   digeser tanpa memotong pill pertama. */
+.contact-links a:first-child { margin-left: auto; }
+.contact-links a:last-child { margin-right: auto; }
 .contact-links a:hover { border-color: var(--accent); color: var(--accent); background: var(--bg); }
 .contact-links svg {
-  width: 20px;
-  height: 20px;
+  width: clamp(15px, 1.6vw, 18px);
+  height: clamp(15px, 1.6vw, 18px);
   flex-shrink: 0;
   fill: currentColor;
 }
@@ -374,9 +393,25 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   .timeline::before { left: 32px; }
   .timeline-item { gap: 14px; }
   .footer-content { flex-direction: column; text-align: center; }
-  .contact-links { gap: 10px; }
-  .contact-links a { width: 40px; height: 40px; }
-  .contact-links svg { width: 18px; height: 18px; }
+
+  /* ---- CONTACT: satu baris horizontal yang selalu muat di layar mobile ----
+     Semua ukuran memakai min(px, vw) agar mengecil mengikuti lebar layar,
+     dan baris direntangkan penuh melewati container (92%) agar ruang maksimal.
+     Hasilnya 5 pill muat tanpa scroll ke kanan/kiri. */
+  .contact-links {
+    margin-inline: -4.3%; /* rentang penuh: 92% container + 2 x 4% = 100% layar */
+    padding-inline: 4px;  /* jarak aman dari tepi layar */
+    gap: min(4px, 1vw);
+  }
+  .contact-links a {
+    gap: min(3px, 0.8vw);
+    padding: 10px min(6px, 1.6vw);
+    font-size: min(11.5px, 2.7vw);
+  }
+  .contact-links svg {
+    width: min(13px, 3.4vw);
+    height: min(13px, 3.4vw);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
