@@ -9,7 +9,9 @@
   --accent: #0f766e;
   --border: #e5e5e5;
   --radius: 6px;
+  --radius-pill: 999px;
   --container: 1080px;
+  --nav-height: 64px;
   --transition: 0.2s ease;
 }
 
@@ -26,6 +28,14 @@ a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
 img { display: block; max-width: 100%; height: auto; }
 button { font-family: inherit; border: none; background: none; cursor: pointer; }
+
+/* Wadah simbol ikon (SVG sprite) — tak terlihat, tak memakan ruang tata letak */
+.svg-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 
 .container { width: min(92%, var(--container)); margin: 0 auto; }
 .section { padding: 96px 0; }
@@ -66,7 +76,12 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
-.navbar { height: 64px; display: flex; align-items: center; justify-content: space-between; }
+.navbar {
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .logo { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
 .logo span { color: var(--accent); }
 .nav-menu { display: flex; align-items: center; gap: 4px; }
@@ -154,7 +169,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   border: 1px solid var(--border);
 }
 .profile-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-"/* ============ ABOUT ============ */
+
+/* ============ ABOUT ============ */
 .about { background: var(--surface); }
 .about-content { max-width: 680px; margin: 0 auto; }
 .about-text {
@@ -219,7 +235,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--muted);
@@ -230,6 +246,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 .timeline-content { padding-top: 2px; }
 .timeline-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
 .timeline-content p { color: var(--muted); font-size: 0.9rem; }
+
 /* ============ PROJECTS ============ */
 .projects { background: var(--bg); }
 .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -250,7 +267,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   right: 10px;
   z-index: 1;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--accent);
@@ -322,7 +339,7 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   gap: clamp(5px, 1vw, 8px);
   padding: clamp(8px, 1.4vw, 10px) clamp(10px, 2vw, 18px);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg);
   color: var(--text);
   font-size: clamp(0.78rem, 1.5vw, 0.9rem);
@@ -484,6 +501,8 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   padding: 1px 5px;
   margin-right: 3px;
 }
+/* Hint sentuh: hanya tampil di layar mobile (lihat blok @media di bawah) */
+.footer-touch { display: none; }
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 900px) {
@@ -496,11 +515,16 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
 }
 
 @media (max-width: 650px) {
+  /* ---------- SPACING ---------- */
   .section { padding: 72px 0; }
   .section-header { margin-bottom: 36px; }
+
+  /* ---------- NAVBAR ---------- */
   .nav-menu {
     position: absolute;
-    top: 64px; left: 0; width: 100%;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
     padding: 12px;
     flex-direction: column;
     gap: 4px;
@@ -513,19 +537,46 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
   }
   .nav-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
   .menu-toggle { display: flex; }
+
+  /* Tombol quick search: jadi ikon kotak 40px seperti .menu-toggle.
+     Label shortcut disembunyikan — perangkat sentuh tak punya keyboard fisik. */
+  .nav-actions { gap: 2px; }
+  .search-trigger {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+    border-color: transparent;
+    background: transparent;
+    color: var(--text);
+  }
+  .search-trigger:hover { background: var(--surface); border-color: transparent; color: var(--text); }
+  .search-trigger-label { display: none; }
+  .search-trigger svg { width: 18px; height: 18px; }
+
+  /* ---------- HERO ---------- */
   .hero { padding-top: 72px; }
   .hero-title { font-size: clamp(2.25rem, 12vw, 3rem); }
   .hero-role { font-size: 0.95rem; }
   .profile-placeholder { width: 180px; height: 180px; }
-  .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
   .btn { width: 100%; }
+
+  /* ---------- SKILLS / JOURNEY / PROJECTS ---------- */
   .skills-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
   .timeline::before { left: 32px; }
   .timeline-item { gap: 14px; }
+
+  /* ---------- FOOTER ---------- */
   .footer-content { flex-direction: column; text-align: center; }
 
-  /* ---- CONTACT: satu baris horizontal yang selalu muat di layar mobile ----
+  /* ---------- CONTACT: satu baris horizontal yang selalu muat di layar mobile ----------
      Semua ukuran memakai min(px, vw) agar mengecil mengikuti lebar layar,
      dan baris direntangkan penuh melewati container (92%) agar ruang maksimal.
      Hasilnya 5 pill muat tanpa scroll ke kanan/kiri. */
@@ -544,8 +595,30 @@ button { font-family: inherit; border: none; background: none; cursor: pointer; 
     height: min(13px, 3.4vw);
   }
 
-  /* Dialog pencarian: anchor lebih dekat ke atas di layar kecil */
-  .search-dialog { margin-top: 8vh; }
+  /* ---------- QUICK SEARCH: dialog ----------
+     Lebar lebih lega, anchor tepat di bawah navbar, dan target sentuh
+     diperbesar. Input 16px mencegah auto-zoom otomatis di iOS/Safari. */
+  .search-dialog {
+    width: min(96%, 520px);
+    margin-top: calc(var(--nav-height) + 12px);
+    max-height: calc(100vh - 88px);
+    max-height: calc(100dvh - 88px); /* ikuti tinggi viewport saat keyboard terbuka */
+  }
+  .search-bar { padding: 14px; gap: 12px; }
+  .search-input { font-size: 16px; }
+  .search-kbd { padding: 9px 12px; font-size: 0.75rem; }
+  .search-results {
+    max-height: min(48vh, 340px);
+    max-height: min(48dvh, 340px);
+    padding: 6px;
+  }
+  .search-results li { padding: 13px 12px; }
+  .search-result-label { font-size: 0.95rem; }
+
+  /* Shortcut keyboard diganti hint sentuh */
+  .footer-kbd { display: none; }
+  .footer-touch { display: inline; }
+  .search-footer { justify-content: center; padding: 9px 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
