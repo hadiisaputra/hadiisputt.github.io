@@ -61,9 +61,26 @@
   </head>
 
   <body>
+    <!-- ==================== ICON SPRITE ==================== -->
+    <!-- Satu sumber untuk ikon yang dipakai di lebih dari satu tempat.
+         Dipakai lewat <use href="#icon-search" /> — lihat style.css (.svg-sprite) -->
+    <svg class="svg-sprite" aria-hidden="true" focusable="false">
+      <symbol
+        id="icon-search"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <line x1="16.5" y1="16.5" x2="21" y2="21" />
+      </symbol>
+    </svg>
+
     <!-- ==================== NAVBAR ==================== -->
     <header class="header">
-      <nav class="navbar container">
+      <nav class="navbar container" aria-label="Primary">
         <!-- Logo -->
         <a href="#home" class="logo">Hadi<span>.</span></a>
 
@@ -103,16 +120,8 @@
             aria-keyshortcuts="Meta+K Control+K"
             aria-label="Open quick search"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="16.5" y1="16.5" x2="21" y2="21" />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <use href="#icon-search" />
             </svg>
             <span class="search-trigger-label">Ctrl+K</span>
           </button>
@@ -120,6 +129,7 @@
           <!-- Mobile Menu Button -->
           <button
             class="menu-toggle"
+            type="button"
             aria-label="Toggle navigation menu"
             aria-controls="primary-navigation"
             aria-expanded="false"
@@ -140,10 +150,10 @@
 
             <h1 class="hero-title">Front-End Web Developer</h1>
 
-            <h2 class="hero-role">
+            <p class="hero-role">
               Information Systems Student <span aria-hidden="true">•</span>
               Exploring Full-Stack
-            </h2>
+            </p>
 
             <div class="hero-buttons">
               <a href="#projects" class="btn btn-primary"> View Projects </a>
@@ -157,7 +167,10 @@
           <!-- Hero Image -->
           <div class="hero-image">
             <div class="profile-placeholder">
-              <img src="images/hadiberdiri.png" alt="Foto Profile" />
+              <img
+                src="images/hadiberdiri.png"
+                alt="Portrait of Hadi Saputra"
+              />
             </div>
           </div>
         </div>
@@ -372,7 +385,7 @@
                 <span class="project-status">In Progress</span>
                 <img
                   src="images/cooming-soon.png"
-                  alt="Project 1"
+                  alt="Preview of Personal Portfolio Website — coming soon"
                   loading="lazy"
                 />
               </div>
@@ -420,7 +433,7 @@
                 <span class="project-status">In Progress</span>
                 <img
                   src="images/cooming-soon.png"
-                  alt="Project 2"
+                  alt="Preview of Task Manager App — coming soon"
                   loading="lazy"
                 />
               </div>
@@ -468,7 +481,7 @@
                 <span class="project-status">In Progress</span>
                 <img
                   src="images/cooming-soon.png"
-                  alt="Project 3"
+                  alt="Preview of Weather Dashboard — coming soon"
                   loading="lazy"
                 />
               </div>
@@ -579,7 +592,7 @@
 
             <!-- Instagram -->
             <a
-              href="https://www.instagram.com/hadiisaputra/"
+              href="https://www.instagram.com/hadisputtra/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -629,23 +642,11 @@
     </footer>
 
     <!-- ==================== QUICK SEARCH DIALOG ==================== -->
-    <dialog
-      class="search-dialog"
-      id="search-dialog"
-      aria-label="Quick search"
-    >
+    <dialog class="search-dialog" id="search-dialog" aria-label="Quick search">
       <div class="search-panel">
         <div class="search-bar">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-search" />
           </svg>
 
           <input
@@ -684,9 +685,10 @@
         </p>
 
         <div class="search-footer">
-          <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
-          <span><kbd>Enter</kbd> Open</span>
-          <span><kbd>Esc</kbd> Close</span>
+          <span class="footer-kbd"><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+          <span class="footer-kbd"><kbd>Enter</kbd> Open</span>
+          <span class="footer-kbd"><kbd>Esc</kbd> Close</span>
+          <span class="footer-touch">Tap a result to open</span>
         </div>
       </div>
     </dialog>
