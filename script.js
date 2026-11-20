@@ -1,241 +1,353 @@
-﻿const menuToggle = document.querySelector(".menu-toggle");
-const navMenu = document.querySelector(".nav-menu");
+﻿/* ============================================================
+   PORTFOLIO — client-side interactions
+   ------------------------------------------------------------
+   Seturut prinsip clean code:
+   - Satu file dipecah per fitur, tiap fitur punya init() sendiri
+     yang dipanggil sekali dari boot() di bagian bawah.
+   - Angka ajaib diganti konstanta bernama.
+   - Duplikasi (icon menu, penulisan aria, query DOM) dikeluarkan
+     jadi helper sekali pakai.
+   - Kode mati (tidak pernah dipakai CSS/HTML) dihapus.
+   ============================================================ */
 
-if (menuToggle && navMenu) {
-  menuToggle.addEventListener("click", () => {
-    navMenu.classList.toggle("active");
-    const open = navMenu.classList.contains("active");
-    menuToggle.innerHTML = open ? "&#10005;" : "&#9776;";
-    menuToggle.setAttribute("aria-expanded", String(open));
-  });
-}
+(function () {
+  "use strict";
 
-const navLinks = document.querySelectorAll(".nav-link");
-navLinks.forEach((link) => {
-  link.addEventListener("click", () => {
-    if (navMenu && navMenu.classList.contains("active")) {
-      navMenu.classList.remove("active");
-      if (menuToggle) menuToggle.innerHTML = "&#9776;";
-    }
-  });
-});
+  /* ---------- DOM helpers ---------- */
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) =>
+    Array.from(scope.querySelectorAll(selector));
 
-const header = document.querySelector(".header");
-window.addEventListener("scroll", () => {
-  if (!header) return;
-  header.classList.toggle("scrolled", window.scrollY > 50);
-});
+  /* ---------- Konstanta ---------- */
+  const MENU_ICON_OPEN = "✕";
+  const MENU_ICON_CLOSED = "☰";
+  /** Jarak dari atas viewport yang menentukan section mana punya link aktif. */
+  const NAV_ACTIVE_OFFSET = 150;
+  /** Jarak dari bawah viewport sebelum elemen mulai animasi reveal. */
+  const REVEAL_OFFSET = 100;
+  /** Posisi scroll (px) tombol "back to top" mulai muncul. */
+  const BACK_TO_TOP_THRESHOLD = 500;
+  /** Elemen yang mendapat animasi reveal saat di-scroll. */
+  const REVEAL_SELECTOR = [
+    ".section-header",
+    ".about-text",
+    ".skill-card",
+    ".timeline-item",
+    ".project-card",
+  ].join(", ");
 
-const sections = document.querySelectorAll("section[id]");
-function updateActiveNavigation() {
-  const scrollPosition = window.scrollY + 150;
-  sections.forEach((section) => {
-    const sectionTop = section.offsetTop;
-    const sectionHeight = section.offsetHeight;
-    const sectionId = section.getAttribute("id");
-    const navigationLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-      navLinks.forEach((link) => link.classList.remove("active"));
-      if (navigationLink) navigationLink.classList.add("active");
-    }
-  });
-}
-window.addEventListener("scroll", updateActiveNavigation);
+  /* ============================================================
+     1. NAVIGASI — dropdown mobile + link aktif saat scroll
+     ============================================================ */
+  const menuToggle = $(".menu-toggle");
+  const navMenu = $(".nav-menu");
+  const navLinks = $$(".nav-link");
+  const sections = $$("section[id]");
 
-const revealElements = document.querySelectorAll(
-  ".section-header, .about-text, .skill-card, .timeline-item, .project-card"
-);
-revealElements.forEach((element) => {
-  element.classList.add("js-reveal");
-});
-function revealOnScroll() {
-  const windowHeight = window.innerHeight;
-  revealElements.forEach((element) => {
-    if (element.getBoundingClientRect().top < windowHeight - 100) {
-      element.classList.add("is-visible");
-    }
-  });
-}
-window.addEventListener("scroll", revealOnScroll);
-window.addEventListener("load", revealOnScroll);
+  /** Satu-satunya tempat mengubah state dropdown, dipakai oleh semua pemanggil. */
+  function setMenuOpen(isOpen) {
+    if (!menuToggle || !navMenu) return;
+    navMenu.classList.toggle("active", isOpen);
+    menuToggle.textContent = isOpen ? MENU_ICON_OPEN : MENU_ICON_CLOSED;
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+  }
 
-document.querySelectorAll(".skill-card").forEach((card, index) => {
-  card.classList.add(`reveal-delay-${index}`);
-});
-document.querySelectorAll(".project-card").forEach((card, index) => {
-  card.classList.add(`reveal-delay-${index}`);
-});
-
-const backToTop = document.createElement("button");
-backToTop.classList.add("back-to-top");
-backToTop.innerHTML = "&#8593;";
-backToTop.setAttribute("aria-label", "Back to top");
-document.body.appendChild(backToTop);
-
-window.addEventListener("scroll", () => {
-  backToTop.classList.toggle("is-visible", window.scrollY > 500);
-});
-
-backToTop.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-document.querySelectorAll(".project-image img").forEach((image) => {
-  image.addEventListener("error", () => {
-    image.parentElement.classList.add("image-error");
-  });
-});
-
-document.querySelectorAll('a[href="#"]').forEach((link) => {
-  link.addEventListener("click", (event) => event.preventDefault());
-});
-
-window.addEventListener("load", () => document.body.classList.add("loaded"));
-
-/* ============ QUICK SEARCH (⌘K / Ctrl+K) ============ */
-const searchDialog = document.getElementById("search-dialog");
-const searchTrigger = document.querySelector(".search-trigger");
-const searchTriggerLabel = document.querySelector(".search-trigger-label");
-const searchInput = document.getElementById("search-input");
-const searchResults = document.getElementById("search-results");
-const searchEmpty = document.getElementById("search-empty");
-
-if (searchDialog && searchTrigger && searchInput && searchResults) {
-  // Label shortcut disesuaikan platform: "⌘K" di macOS, "Ctrl+K" di lainnya
-  const isMac = /mac|iphone|ipad|ipod/i.test(
-    (navigator.userAgentData && navigator.userAgentData.platform) ||
-      navigator.platform ||
-      navigator.userAgent
-  );
-  const shortcutText = isMac ? "⌘K" : "Ctrl+K";
-  if (searchTriggerLabel) searchTriggerLabel.textContent = shortcutText;
-  searchTrigger.setAttribute("aria-label", `Open quick search (${shortcutText})`);
-
-  // Kumpulkan data pencarian: section navigasi + kartu project
-  const searchItems = [];
-  document.querySelectorAll(".nav-link").forEach((link) => {
-    searchItems.push({
-      label: link.textContent.trim(),
-      sub: "Section",
-      run: () => link.click(),
-    });
-  });
-  document.querySelectorAll(".project-card").forEach((card) => {
-    const title = card.querySelector(".project-title");
-    const category = card.querySelector(".project-category");
-    if (!title) return;
-    searchItems.push({
-      label: title.textContent.trim(),
-      sub: category ? category.textContent.trim() : "Project",
-      run: () => card.scrollIntoView({ behavior: "smooth", block: "center" }),
-    });
-  });
-
-  let filteredItems = [];
-  let activeIndex = 0;
-
-  function renderResults(query) {
-    const q = query.trim().toLowerCase();
-    filteredItems = searchItems.filter(
-      (item) =>
-        !q ||
-        item.label.toLowerCase().includes(q) ||
-        item.sub.toLowerCase().includes(q)
+  function updateActiveNavigation() {
+    const scrollPosition = window.scrollY + NAV_ACTIVE_OFFSET;
+    const currentSection = sections.find(
+      (section) =>
+        scrollPosition >= section.offsetTop &&
+        scrollPosition < section.offsetTop + section.offsetHeight
     );
-    searchResults.innerHTML = "";
-    if (filteredItems.length === 0) {
-      searchEmpty.hidden = false;
-      searchInput.removeAttribute("aria-activedescendant");
-      return;
+    const currentHref = currentSection ? `#${currentSection.id}` : null;
+
+    navLinks.forEach((link) => {
+      link.classList.toggle(
+        "active",
+        currentHref !== null && link.getAttribute("href") === currentHref
+      );
+    });
+  }
+
+  function initNavigation() {
+    if (menuToggle && navMenu) {
+      menuToggle.addEventListener("click", () =>
+        setMenuOpen(!navMenu.classList.contains("active"))
+      );
     }
-    searchEmpty.hidden = true;
-    activeIndex = 0;
-    filteredItems.forEach((item, index) => {
+
+    navLinks.forEach((link) =>
+      link.addEventListener("click", () => setMenuOpen(false))
+    );
+
+    window.addEventListener("scroll", updateActiveNavigation, {
+      passive: true,
+    });
+  }
+
+  /* ============================================================
+     2. ANIMASI REVEAL — elemen muncul bertahap saat di-scroll
+     ============================================================ */
+  function applyRevealDelays(selector) {
+    $$(selector).forEach((element, index) => {
+      element.classList.add(`reveal-delay-${index}`);
+    });
+  }
+
+  function initRevealAnimations() {
+    const revealElements = $$(REVEAL_SELECTOR);
+
+    revealElements.forEach((element) => element.classList.add("js-reveal"));
+    applyRevealDelays(".skill-card");
+    applyRevealDelays(".project-card");
+
+    const revealVisibleElements = () => {
+      const threshold = window.innerHeight - REVEAL_OFFSET;
+      revealElements.forEach((element) => {
+        if (element.getBoundingClientRect().top < threshold) {
+          element.classList.add("is-visible");
+        }
+      });
+    };
+
+    window.addEventListener("scroll", revealVisibleElements, {
+      passive: true,
+    });
+    window.addEventListener("load", revealVisibleElements);
+  }
+
+  /* ============================================================
+     3. TOMBOL KEMBALI KE ATAS
+     ============================================================ */
+  function initBackToTop() {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "back-to-top";
+    button.textContent = "↑";
+    button.setAttribute("aria-label", "Back to top");
+    button.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    );
+    document.body.appendChild(button);
+
+    window.addEventListener(
+      "scroll",
+      () =>
+        button.classList.toggle(
+          "is-visible",
+          window.scrollY > BACK_TO_TOP_THRESHOLD
+        ),
+      { passive: true }
+    );
+  }
+
+  /* ============================================================
+     4. GAMBAR PROYEK — tampilkan placeholder bila file tidak ada
+     ============================================================ */
+  function initImageFallback() {
+    $$(".project-image img").forEach((image) => {
+      image.addEventListener("error", () =>
+        image.parentElement.classList.add("image-error")
+      );
+    });
+  }
+
+  /* ============================================================
+     5. QUICK SEARCH (⌘K / Ctrl+K)
+     ============================================================ */
+  function detectShortcutLabel() {
+    const platform =
+      (navigator.userAgentData && navigator.userAgentData.platform) ||
+      navigator.platform ||
+      navigator.userAgent;
+    return /mac|iphone|ipad|ipod/i.test(platform) ? "⌘K" : "Ctrl+K";
+  }
+
+  function initQuickSearch() {
+    const dialog = document.getElementById("search-dialog");
+    const trigger = $(".search-trigger");
+    const triggerLabel = $(".search-trigger-label");
+    const input = document.getElementById("search-input");
+    const results = document.getElementById("search-results");
+    const emptyState = document.getElementById("search-empty");
+    const closeButton = $(".search-close");
+
+    if (!dialog || !trigger || !input || !results || !emptyState) return;
+
+    const shortcut = detectShortcutLabel();
+    if (triggerLabel) triggerLabel.textContent = shortcut;
+    trigger.setAttribute("aria-label", `Open quick search (${shortcut})`);
+
+    let visibleItems = [];
+    let optionElements = [];
+    let activeIndex = 0;
+
+    /* ---- Sumber data: link navigasi + kartu proyek ---- */
+    function collectItems() {
+      const sectionItems = navLinks.map((link) => ({
+        label: link.textContent.trim(),
+        category: "Section",
+        open: () => link.click(),
+      }));
+
+      const projectItems = $$(".project-card")
+        .map((card) => {
+          const title = card.querySelector(".project-title");
+          const category = card.querySelector(".project-category");
+          if (!title) return null;
+          return {
+            label: title.textContent.trim(),
+            category: category ? category.textContent.trim() : "Project",
+            open: () =>
+              card.scrollIntoView({ behavior: "smooth", block: "center" }),
+          };
+        })
+        .filter(Boolean);
+
+      return [...sectionItems, ...projectItems];
+    }
+
+    const items = collectItems();
+
+    /* ---- Filter & render ---- */
+    function filterItems(query) {
+      const normalized = query.trim().toLowerCase();
+      if (!normalized) return items;
+      return items.filter(
+        ({ label, category }) =>
+          label.toLowerCase().includes(normalized) ||
+          category.toLowerCase().includes(normalized)
+      );
+    }
+
+    function createOption(item, index, isActive) {
       const option = document.createElement("li");
       option.id = `search-option-${index}`;
+      option.dataset.index = String(index);
       option.setAttribute("role", "option");
-      option.classList.toggle("is-active", index === 0);
-      option.setAttribute("aria-selected", String(index === 0));
+      option.setAttribute("aria-selected", String(isActive));
+      option.classList.toggle("is-active", isActive);
 
       const label = document.createElement("span");
       label.className = "search-result-label";
       label.textContent = item.label;
 
-      const sub = document.createElement("span");
-      sub.className = "search-result-sub";
-      sub.textContent = item.sub;
+      const category = document.createElement("span");
+      category.className = "search-result-sub";
+      category.textContent = item.category;
 
-      option.append(label, sub);
-      option.addEventListener("click", () => activateItem(index));
-      searchResults.appendChild(option);
-    });
-    searchInput.setAttribute("aria-activedescendant", "search-option-0");
-  }
-
-  function setActive(nextIndex) {
-    const options = searchResults.querySelectorAll("li");
-    if (!options.length) return;
-    activeIndex = (nextIndex + options.length) % options.length;
-    options.forEach((option, index) => {
-      const isActive = index === activeIndex;
-      option.classList.toggle("is-active", isActive);
-      option.setAttribute("aria-selected", String(isActive));
-    });
-    const current = options[activeIndex];
-    searchInput.setAttribute("aria-activedescendant", current.id);
-    current.scrollIntoView({ block: "nearest" });
-  }
-
-  function activateItem(index) {
-    const item = filteredItems[index];
-    if (!item) return;
-    searchDialog.close();
-    item.run();
-  }
-
-  function openSearch() {
-    if (searchDialog.open) return;
-    searchInput.value = "";
-    renderResults("");
-    searchDialog.showModal();
-    searchInput.focus();
-  }
-
-  function closeSearch() {
-    if (searchDialog.open) searchDialog.close();
-  }
-
-  searchTrigger.addEventListener("click", openSearch);
-  searchInput.addEventListener("input", () => renderResults(searchInput.value));
-
-  // Navigasi hasil dengan keyboard
-  searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setActive(activeIndex + 1);
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActive(activeIndex - 1);
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      activateItem(activeIndex);
+      option.append(label, category);
+      return option;
     }
-  });
 
-  // Klik backdrop (area gelap di luar panel) untuk menutup
-  searchDialog.addEventListener("click", (event) => {
-    if (event.target === searchDialog) closeSearch();
-  });
+    function renderResults(query) {
+      visibleItems = filterItems(query);
+      optionElements = [];
+      results.replaceChildren();
 
-  const searchClose = document.querySelector(".search-close");
-  if (searchClose) searchClose.addEventListener("click", closeSearch);
+      if (visibleItems.length === 0) {
+        emptyState.hidden = false;
+        input.removeAttribute("aria-activedescendant");
+        return;
+      }
 
-  // Shortcut global: Ctrl+K (Windows/Linux) atau ⌘K (macOS)
-  document.addEventListener("keydown", (event) => {
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-      event.preventDefault();
-      if (searchDialog.open) closeSearch();
-      else openSearch();
+      emptyState.hidden = true;
+      activeIndex = 0;
+      optionElements = visibleItems.map((item, index) => {
+        const option = createOption(item, index, index === 0);
+        results.appendChild(option);
+        return option;
+      });
+      input.setAttribute("aria-activedescendant", optionElements[0].id);
     }
-  });
-}
+
+    function setActive(nextIndex) {
+      if (optionElements.length === 0) return;
+      activeIndex =
+        (nextIndex + optionElements.length) % optionElements.length;
+
+      optionElements.forEach((option, index) => {
+        const isActive = index === activeIndex;
+        option.classList.toggle("is-active", isActive);
+        option.setAttribute("aria-selected", String(isActive));
+      });
+
+      const activeOption = optionElements[activeIndex];
+      input.setAttribute("aria-activedescendant", activeOption.id);
+      activeOption.scrollIntoView({ block: "nearest" });
+    }
+
+    function activate(index) {
+      const item = visibleItems[index];
+      if (!item) return;
+      close();
+      item.open();
+    }
+
+    /* ---- Lifecycle dialog ---- */
+    function open() {
+      if (dialog.open) return;
+      setMenuOpen(false); // jangan biarkan dropdown menumpuk di belakang dialog
+      input.value = "";
+      renderResults("");
+      dialog.showModal();
+      input.focus();
+    }
+
+    function close() {
+      if (dialog.open) dialog.close();
+    }
+
+    /* ---- Events ---- */
+    trigger.addEventListener("click", open);
+    input.addEventListener("input", () => renderResults(input.value));
+
+    const keyActions = {
+      ArrowDown: () => setActive(activeIndex + 1),
+      ArrowUp: () => setActive(activeIndex - 1),
+      Enter: () => activate(activeIndex),
+    };
+
+    input.addEventListener("keydown", (event) => {
+      const action = keyActions[event.key];
+      if (!action) return;
+      event.preventDefault();
+      action();
+    });
+
+    // Satu listener untuk semua hasil, bukan satu listener per opsi
+    results.addEventListener("click", (event) => {
+      const option = event.target.closest("li[data-index]");
+      if (option) activate(Number(option.dataset.index));
+    });
+
+    // Klik backdrop (area gelap di luar panel) untuk menutup
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) close();
+    });
+
+    if (closeButton) closeButton.addEventListener("click", close);
+
+    // Shortcut global: Ctrl+K (Windows/Linux) atau ⌘K (macOS)
+    document.addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (dialog.open) close();
+        else open();
+      }
+    });
+  }
+
+  /* ============================================================
+     BOOT
+     ============================================================ */
+  function boot() {
+    initNavigation();
+    initRevealAnimations();
+    initBackToTop();
+    initImageFallback();
+    initQuickSearch();
+  }
+
+  boot();
+})();
